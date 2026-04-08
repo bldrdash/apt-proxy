@@ -44,6 +44,10 @@ tag-bump:
 		echo "Error: bump-tag can only be run on the main branch. Currently on: $$CURRENT_BRANCH"; \
 		exit 1; \
 	fi
+	@if ! git diff --quiet || ! git diff --cached --quiet; then \
+		echo "Error: git branch is not clean. Please commit all changes before bumping the tag."; \
+		exit 1; \
+	fi
 	@LATEST=$$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.1.0"); \
 	NEXT=$$(echo $$LATEST | awk -F. '{print $$1"."$$2"."$$3+1}'); \
 	echo "Bumping $$LATEST -> $$NEXT"; \
