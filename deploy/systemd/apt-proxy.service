@@ -1,0 +1,40 @@
+[Unit]
+Description=APT Proxy - Lightweight APT Cache Proxy
+Documentation=https://github.com/soulteary/apt-proxy
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=apt-proxy
+Group=apt-proxy
+
+# Working directory
+WorkingDirectory=/var/lib/apt-proxy
+
+# Service execution
+ExecStart=/usr/local/bin/apt-proxy
+Restart=on-failure
+RestartSec=5s
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=apt-proxy
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=512
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/var/lib/apt-proxy
+
+# Environment variables 
+EnvironmentFile=/etc/default/apt-proxy
+
+[Install]
+WantedBy=multi-user.target

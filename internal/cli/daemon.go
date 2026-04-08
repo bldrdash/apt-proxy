@@ -92,6 +92,13 @@ func (s *Server) initLogger() {
 
 	// Set as default logger
 	logger.SetDefault(s.log)
+
+	// Log version information as the first message
+	s.log.Info().
+		Str("version", config.Version).
+		Str("commit", config.Commit).
+		Str("dirty", config.Dirty).
+		Msg("apt-proxy version information")
 }
 
 // initTracing initializes OpenTelemetry tracing if OTLP endpoint is configured

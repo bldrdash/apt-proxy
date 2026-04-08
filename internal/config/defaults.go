@@ -1,5 +1,10 @@
 package config
 
+import (
+	"fmt"
+	"os"
+)
+
 // Environment variable names for configuration
 const (
 	EnvHost        = "APT_PROXY_HOST"
@@ -67,3 +72,16 @@ const (
 	EnvLogLevel  = "LOG_LEVEL"
 	EnvLogFormat = "LOG_FORMAT"
 )
+
+// Version information injected at build time via ldflags
+// Example: go build -ldflags "-X 'github.com/soulteary/apt-proxy/internal/config.Version=v1.0.0' ..."
+var (
+	Version = "dev"
+	Commit  = "unknown"
+	Dirty   = "false"
+)
+
+// PrintVersion prints the version, commit, and dirty status to stdout
+func PrintVersion() {
+	fmt.Fprintf(os.Stdout, "apt-proxy version %s (commit: %s, dirty: %s)\n", Version, Commit, Dirty)
+}

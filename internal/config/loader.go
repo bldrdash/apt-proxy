@@ -57,6 +57,9 @@ func ModeToInt(mode string) int {
 // defineFlags defines all command-line flags for the application.
 // This function is shared between ParseFlags and ParseFlagsWithConfigFile.
 func defineFlags(flags *flag.FlagSet) {
+	// Version flag
+	flags.Bool("version", false, "display version, commit, and dirty status")
+
 	// Define flags (for CLI compatibility and help text)
 	flags.String("host", DefaultHost, "the host to bind to")
 	flags.String("port", DefaultPort, "the port to bind to")
@@ -99,6 +102,14 @@ func defineFlags(flags *flag.FlagSet) {
 // Configuration priority: CLI flag > environment variable > default value.
 // Returns an error if flag parsing fails or if an invalid mode is specified.
 func ParseFlags() (*Config, error) {
+	// Handle --version flag early
+	for _, arg := range os.Args[1:] {
+		if arg == "--version" || arg == "-version" {
+			fmt.Fprintf(os.Stdout, "apt-proxy version %s (commit: %s, dirty: %s)\n", Version, Commit, Dirty)
+			os.Exit(0)
+		}
+	}
+
 	flags := flag.NewFlagSet("apt-proxy", flag.ContinueOnError)
 	defineFlags(flags)
 
@@ -466,6 +477,14 @@ func MergeConfigs(base, override *Config) *Config {
 // ParseFlagsWithConfigFile parses command-line flags and optionally loads
 // configuration from a YAML file. Priority: CLI > ENV > Config File > Default.
 func ParseFlagsWithConfigFile() (*Config, error) {
+	// Handle --version flag early (before all other processing)
+	for _, arg := range os.Args[1:] {
+		if arg == "--version" || arg == "-version" {
+			fmt.Fprintf(os.Stdout, "apt-proxy version %s (commit: %s, dirty: %s)\n", Version, Commit, Dirty)
+			os.Exit(0)
+		}
+	}
+
 	flags := flag.NewFlagSet("apt-proxy", flag.ContinueOnError)
 	defineFlags(flags)
 
