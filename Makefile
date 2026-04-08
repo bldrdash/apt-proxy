@@ -22,7 +22,7 @@ GO_LDFLAGS := -w -s \
 	-X "github.com/soulteary/apt-proxy/internal/config.Dirty=$(DIRTY)"
 
  
-.PHONY: all build test fmt vet lint clean install run docker-build goreleaser tag-bump
+.PHONY: all build test fmt vet lint clean install run docker-build goreleaser tag-bump push
 
 all: build
 
@@ -52,3 +52,7 @@ tag-bump:
 	NEXT=$$(echo $$LATEST | awk -F. '{print $$1"."$$2"."$$3+1}'); \
 	echo "Bumping $$LATEST -> $$NEXT"; \
 	git tag -a $$NEXT -m "Release $$NEXT"
+
+push:
+	git push origin main
+	git push origin --tags
