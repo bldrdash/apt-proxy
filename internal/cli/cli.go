@@ -53,9 +53,9 @@ const (
 var allowedModes = config.GetAllowedModes()
 
 // ParseFlags parses command-line flags and returns a Config.
-// This is a wrapper around config.ParseFlags for backward compatibility.
+// This is a wrapper around config.ParseFlagsWithConfigFile for backward compatibility.
 func ParseFlags() (*Config, error) {
-	return config.ParseFlags()
+	return config.ParseFlagsWithConfigFile()
 }
 
 // ValidateConfig validates the configuration.

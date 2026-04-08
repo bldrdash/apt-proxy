@@ -32,11 +32,6 @@ func (h *CacheHandler) HandleCacheStats(w http.ResponseWriter, r *http.Request) 
 
 	stats := h.cache.Stats()
 
-	// Update Prometheus metrics
-	if httpcache.DefaultMetrics != nil {
-		httpcache.DefaultMetrics.UpdateCacheStats(stats)
-	}
-
 	resp := CacheStatsResponse{
 		TotalSizeBytes: stats.TotalSize,
 		TotalSizeHuman: FormatBytes(stats.TotalSize),

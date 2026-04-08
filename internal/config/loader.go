@@ -539,7 +539,7 @@ func buildCLIConfig(flags *flag.FlagSet, defaultHost, defaultPort, defaultCacheD
 
 	// Resolve security configurations
 	apiKey := configutil.ResolveString(flags, "api-key", EnvAPIKey, "", true)
-	enableAPIAuth := configutil.ResolveBool(flags, "api-key", EnvEnableAPIAuth, false)
+	enableAPIAuth := configutil.ResolveBool(flags, "", EnvEnableAPIAuth, false)
 	if apiKey != "" {
 		enableAPIAuth = true
 	}
