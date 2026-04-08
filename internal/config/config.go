@@ -16,6 +16,9 @@ type Config struct {
 	DistributionsConfigPath string         `yaml:"distributions_config"`
 	// UpstreamKeepAlive enables HTTP keep-alive to upstream mirrors (default true).
 	UpstreamKeepAlive bool `yaml:"upstream_keep_alive"`
+	// AsyncBenchmark enables asynchronous mirror benchmarking (default true).
+	// Set to false to skip benchmarking and use specified or default mirrors immediately.
+	AsyncBenchmark bool `yaml:"async_benchmark"`
 }
 
 // SecurityConfig holds security-related configuration

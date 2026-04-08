@@ -169,6 +169,11 @@ func createRewriterAsync(mode int, rewriters *URLRewriters) *URLRewriter {
 	}
 
 	// Run benchmark in background and update when complete
+	// Skip benchmarking if AsyncBenchmark is disabled in global state
+	if !state.GetAsyncBenchmarkEnabled() {
+		return rewriter
+	}
+
 	benchmarks.GetTheFastestMirrorAsync(mode, mirrorURLs, benchmarkURL, func(result benchmarks.AsyncBenchmarkResult) {
 		if result.Error != nil {
 			log.Error().Err(result.Error).Str("distro", name).Msg("async benchmark failed")

@@ -71,6 +71,9 @@ func defineFlags(flags *flag.FlagSet) {
 	flags.String("alpine", "", "the alpine mirror for fetching packages")
 	flags.String("distributions-config", "", "path to distributions YAML (distributions.yaml)")
 
+	// Benchmarking configuration flags
+	flags.Bool("async-benchmark", DefaultAsyncBenchmark, "enable async mirror benchmarking (use specified mirrors immediately without benchmarking)")
+
 	// Cache configuration flags
 	flags.Int64("cache-max-size", DefaultCacheMaxSizeGB,
 		"maximum cache size in GB (0 to disable size limit)")
@@ -151,6 +154,7 @@ func ParseFlags() (*Config, error) {
 // This enables components throughout the application to access configuration.
 func UpdateGlobalState(config *Config) error {
 	state.SetProxyMode(config.Mode)
+	state.SetAsyncBenchmarkEnabled(config.AsyncBenchmark)
 
 	state.SetUbuntuMirror(config.Mirrors.Ubuntu)
 	state.SetUbuntuPortsMirror(config.Mirrors.UbuntuPorts)
@@ -537,6 +541,9 @@ func buildCLIConfig(flags *flag.FlagSet, defaultHost, defaultPort, defaultCacheD
 	tlsCertFile := configutil.ResolveString(flags, "tls-cert", EnvTLSCertFile, "", true)
 	tlsKeyFile := configutil.ResolveString(flags, "tls-key", EnvTLSKeyFile, "", true)
 
+	// Resolve benchmarking configurations
+	asyncBenchmark := configutil.ResolveBool(flags, "async-benchmark", EnvAsyncBenchmark, DefaultAsyncBenchmark)
+
 	// Resolve security configurations
 	apiKey := configutil.ResolveString(flags, "api-key", EnvAPIKey, "", true)
 	enableAPIAuth := configutil.ResolveBool(flags, "", EnvEnableAPIAuth, false)
@@ -550,6 +557,7 @@ func buildCLIConfig(flags *flag.FlagSet, defaultHost, defaultPort, defaultCacheD
 		Debug:             debug,
 		CacheDir:          cacheDir,
 		UpstreamKeepAlive: upstreamKeepAlive,
+		AsyncBenchmark:    asyncBenchmark,
 		Mirrors: MirrorConfig{
 			Ubuntu:      ubuntu,
 			UbuntuPorts: ubuntuPorts,

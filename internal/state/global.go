@@ -79,23 +79,25 @@ func (m *MirrorState) Clone() *MirrorState {
 // and mirror configurations for all supported distributions.
 // This struct supports dependency injection for better testability.
 type AppState struct {
-	proxyMode   int
-	modeMutex   sync.RWMutex
-	Ubuntu      *MirrorState
-	UbuntuPorts *MirrorState
-	Debian      *MirrorState
-	CentOS      *MirrorState
-	Alpine      *MirrorState
+	proxyMode             int
+	asyncBenchmarkEnabled bool
+	modeMutex             sync.RWMutex
+	Ubuntu                *MirrorState
+	UbuntuPorts           *MirrorState
+	Debian                *MirrorState
+	CentOS                *MirrorState
+	Alpine                *MirrorState
 }
 
 // NewAppState creates a new AppState instance with initialized mirror states
 func NewAppState() *AppState {
 	return &AppState{
-		Ubuntu:      NewMirrorState(distro.TYPE_LINUX_DISTROS_UBUNTU),
-		UbuntuPorts: NewMirrorState(distro.TYPE_LINUX_DISTROS_UBUNTU_PORTS),
-		Debian:      NewMirrorState(distro.TYPE_LINUX_DISTROS_DEBIAN),
-		CentOS:      NewMirrorState(distro.TYPE_LINUX_DISTROS_CENTOS),
-		Alpine:      NewMirrorState(distro.TYPE_LINUX_DISTROS_ALPINE),
+		asyncBenchmarkEnabled: true, // enabled by default
+		Ubuntu:                NewMirrorState(distro.TYPE_LINUX_DISTROS_UBUNTU),
+		UbuntuPorts:           NewMirrorState(distro.TYPE_LINUX_DISTROS_UBUNTU_PORTS),
+		Debian:                NewMirrorState(distro.TYPE_LINUX_DISTROS_DEBIAN),
+		CentOS:                NewMirrorState(distro.TYPE_LINUX_DISTROS_CENTOS),
+		Alpine:                NewMirrorState(distro.TYPE_LINUX_DISTROS_ALPINE),
 	}
 }
 
@@ -111,6 +113,20 @@ func (s *AppState) GetProxyMode() int {
 	s.modeMutex.RLock()
 	defer s.modeMutex.RUnlock()
 	return s.proxyMode
+}
+
+// SetAsyncBenchmarkEnabled sets whether async benchmarking is enabled
+func (s *AppState) SetAsyncBenchmarkEnabled(enabled bool) {
+	s.modeMutex.Lock()
+	defer s.modeMutex.Unlock()
+	s.asyncBenchmarkEnabled = enabled
+}
+
+// GetAsyncBenchmarkEnabled returns whether async benchmarking is enabled
+func (s *AppState) GetAsyncBenchmarkEnabled() bool {
+	s.modeMutex.RLock()
+	defer s.modeMutex.RUnlock()
+	return s.asyncBenchmarkEnabled
 }
 
 // SetMirror sets the mirror URL for a specific distribution
@@ -163,12 +179,13 @@ func (s *AppState) Clone() *AppState {
 	s.modeMutex.RUnlock()
 
 	clone := &AppState{
-		proxyMode:   mode,
-		Ubuntu:      s.Ubuntu.Clone(),
-		UbuntuPorts: s.UbuntuPorts.Clone(),
-		Debian:      s.Debian.Clone(),
-		CentOS:      s.CentOS.Clone(),
-		Alpine:      s.Alpine.Clone(),
+		proxyMode:             mode,
+		asyncBenchmarkEnabled: s.asyncBenchmarkEnabled,
+		Ubuntu:                s.Ubuntu.Clone(),
+		UbuntuPorts:           s.UbuntuPorts.Clone(),
+		Debian:                s.Debian.Clone(),
+		CentOS:                s.CentOS.Clone(),
+		Alpine:                s.Alpine.Clone(),
 	}
 	return clone
 }
@@ -224,6 +241,16 @@ func SetProxyMode(mode int) {
 func GetProxyMode() int {
 	initGlobalState()
 	return globalState.GetProxyMode()
+}
+
+func SetAsyncBenchmarkEnabled(enabled bool) {
+	initGlobalState()
+	globalState.SetAsyncBenchmarkEnabled(enabled)
+}
+
+func GetAsyncBenchmarkEnabled() bool {
+	initGlobalState()
+	return globalState.GetAsyncBenchmarkEnabled()
 }
 
 // ============================================================================

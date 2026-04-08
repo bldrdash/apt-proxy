@@ -36,6 +36,9 @@ const (
 
 	// Distributions configuration (distributions.yaml) path
 	EnvDistributionsConfig = "APT_PROXY_DISTRIBUTIONS_CONFIG"
+
+	// Benchmarking configuration environment variable
+	EnvAsyncBenchmark = "APT_PROXY_ASYNC_BENCHMARK"
 )
 
 // Default configuration values
